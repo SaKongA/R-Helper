@@ -9,15 +9,32 @@ struct HardwareMetricsView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .top, spacing: 16) {
-                if monitoring.sample != nil {
-                    VStack(alignment: .leading, spacing: 4) {
-                        metrics(title: monitoring.sample?.cpuInfo.model ?? "CPU", values: cpuValues)
-                        cpuDetailsRow
+            if monitoring.sample != nil {
+                VStack(alignment: .leading, spacing: 4) {
+                    metrics(title: monitoring.sample?.cpuInfo.model ?? "CPU", values: cpuValues)
+                    cpuDetailsRow
+                    if let usage = monitoring.sample?.cpuUsagePercent {
+                        usageBar(usage)
                     }
                 }
-                if !gpuValues.isEmpty {
+            }
+            if !gpuValues.isEmpty || monitoring.sample?.gpuStatistics?.usagePercent != nil || monitoring.sample?.gpuStatistics?.videoMemoryUsedBytes != nil {
+                if monitoring.sample != nil {
+                    Divider()
+                        .padding(.vertical, 3)
+                }
+                VStack(alignment: .leading, spacing: 8) {
                     metrics(title: monitoring.sample?.gpuModel ?? "GPU", values: gpuValues)
+                    HStack(alignment: .top, spacing: 12) {
+                        if let used = monitoring.sample?.gpuStatistics?.videoMemoryUsedBytes {
+                            let total = monitoring.sample?.gpuStatistics?.videoMemoryTotalBytes
+                            let progress = total.flatMap { $0 > 0 && used <= $0 ? Double(used) / Double($0) : nil }
+                            gpuProgress(title: "显存占用", value: memoryDescription(used: used, total: total), progress: progress)
+                        }
+                        if let usage = monitoring.sample?.gpuStatistics?.usagePercent {
+                            gpuProgress(title: "占用率", value: String(format: "%.0f%%", usage), progress: usage / 100)
+                        }
+                    }
                 }
             }
 
@@ -174,6 +191,45 @@ struct HardwareMetricsView: View {
         return values
     }
 
+    private func gpuProgress(title: String, value: String, progress: Double?) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 4) {
+                Text(L10n.text(title))
+                Spacer(minLength: 4)
+                Text(value)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+            if let progress {
+                ProgressView(value: progress)
+                    .progressViewStyle(.linear)
+                    .accessibilityLabel(L10n.text(title))
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func usageBar(_ usage: Double) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text(L10n.text("占用率"))
+                Spacer()
+                Text(String(format: "%.0f%%", usage))
+                    .foregroundStyle(.secondary)
+            }
+            ProgressView(value: usage, total: 100)
+                .progressViewStyle(.linear)
+                .accessibilityLabel(L10n.text("占用率"))
+        }
+    }
+
+    private func memoryDescription(used: UInt64, total: UInt64?) -> String {
+        let usedText = ByteCountFormatter.string(fromByteCount: Int64(used), countStyle: .memory)
+        guard let total, total > 0, used <= total else { return usedText }
+        let totalText = ByteCountFormatter.string(fromByteCount: Int64(total), countStyle: .memory)
+        return "\(usedText) / \(totalText)"
+    }
+
     private func metrics(title: String, values: [String: String]) -> some View {
         let labels = ["频率", "温度", "风扇", "功耗"].filter { values[$0] != nil }
         return VStack(alignment: .leading, spacing: 6) {
@@ -183,12 +239,14 @@ struct HardwareMetricsView: View {
                 .lineLimit(1)
                 .truncationMode(.tail)
 
-            ForEach(labels, id: \.self) { label in
-                HStack(spacing: 4) {
-                    Text(L10n.text(label))
-                    Spacer(minLength: 0)
-                    Text(values[label] ?? "")
-                        .foregroundStyle(.secondary)
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], alignment: .leading, spacing: 6) {
+                ForEach(labels, id: \.self) { label in
+                    HStack(spacing: 4) {
+                        Text(L10n.text(label))
+                        Spacer(minLength: 4)
+                        Text(values[label] ?? "")
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
         }

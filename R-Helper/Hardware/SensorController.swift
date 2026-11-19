@@ -21,6 +21,7 @@ nonisolated struct FanSensorSample: Sendable {
 nonisolated struct HardwareSensorSample: Sendable {
     let driver: KextConnectionStatus
     let cpu: CPUSensorSample?
+    let cpuUsagePercent: Double?
     let cpuInfo: CPUInfo
     let gpuModel: String?
     let gpuStatistics: GPUStatistics?
@@ -37,6 +38,7 @@ nonisolated enum KextConnectionStatus: Sendable {
 nonisolated final class SensorController: @unchecked Sendable {
     private let client: AsusACPIClient
     private let amdRyzen = AMDRyzenClient()
+    private let cpuUsageReader = CPUUsageReader()
 
     init(client: AsusACPIClient = AsusACPIClient()) { self.client = client }
 
@@ -72,8 +74,10 @@ nonisolated final class SensorController: @unchecked Sendable {
     }
 
     // 读取全部可用的监测数据
-    func readHardware() -> HardwareSensorSample {
+    func readHardware(resetCPUUsage: Bool = false) -> HardwareSensorSample {
+        if resetCPUUsage { cpuUsageReader.reset() }
         let cpu = try? readCPU()
+        let cpuUsage = cpuUsageReader.read()
         let cpuInfo = readCPUInfo()
         let gpu = readGPUDevice()
         let gpuStatistics = gpu.flatMap { GPUStatisticsReader.read(device: $0) }
@@ -85,13 +89,13 @@ nonisolated final class SensorController: @unchecked Sendable {
             driver = .connected(state.version)
         } catch {
             client.disconnect()
-            return HardwareSensorSample(driver: .disconnected(error), cpu: cpu, cpuInfo: cpuInfo, gpuModel: gpu?.model, gpuStatistics: gpuStatistics, fans: nil, gpuTemperature: nil, batteryDischarge: nil)
+            return HardwareSensorSample(driver: .disconnected(error), cpu: cpu, cpuUsagePercent: cpuUsage, cpuInfo: cpuInfo, gpuModel: gpu?.model, gpuStatistics: gpuStatistics, fans: nil, gpuTemperature: nil, batteryDischarge: nil)
         }
         let cpuFan = state.validFields & UInt32(AsusACPIValidCPUFan) != 0 ? state.cpuFanRPM : nil
         let gpuFan = state.validFields & UInt32(AsusACPIValidGPUFan) != 0 ? state.gpuFanRPM : nil
         let gpuTemperature = try? readTemperature(.gpu)
         let batteryDischarge = try? readBatteryDischarge()
-        return HardwareSensorSample(driver: driver, cpu: cpu, cpuInfo: cpuInfo, gpuModel: gpu?.model, gpuStatistics: gpuStatistics, fans: FanSensorSample(cpuRPM: cpuFan, gpuRPM: gpuFan), gpuTemperature: gpuTemperature, batteryDischarge: batteryDischarge)
+        return HardwareSensorSample(driver: driver, cpu: cpu, cpuUsagePercent: cpuUsage, cpuInfo: cpuInfo, gpuModel: gpu?.model, gpuStatistics: gpuStatistics, fans: FanSensorSample(cpuRPM: cpuFan, gpuRPM: gpuFan), gpuTemperature: gpuTemperature, batteryDischarge: batteryDischarge)
     }
 
     // 读取系统提供的 CPU 信息

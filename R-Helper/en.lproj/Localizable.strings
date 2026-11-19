@@ -101,3 +101,5 @@
 "P-state 定义" = "P-state Definitions";
 "HID 监听启动失败：0x%08X" = "Failed to start HID monitoring: 0x%08X";
 "HID 监听启动失败" = "Failed to start HID monitoring";
+"显存占用" = "VRAM";
+"占用率" = "Usage";

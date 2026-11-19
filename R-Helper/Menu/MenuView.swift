@@ -123,7 +123,7 @@ struct MenuView: View {
         .padding(.horizontal, 6)
         .padding(.top, 6)
         .padding(.bottom, 7)
-        .frame(width: 320)
+        .frame(width: 360)
         .alert(L10n.text("操作失败"), isPresented: Binding(
             get: { loginError != nil },
             set: { if !$0 { loginError = nil } }
