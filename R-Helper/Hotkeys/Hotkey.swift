@@ -16,6 +16,7 @@ enum Hotkey: UInt32 {
     case camera = 0x85
     case previousAuraEffect = 0xB2
     case fnF4 = 0xB3
+    case f14 = 0x10000
     case keyboardLight = 0xC7
     case fnV = 0x8A
     case fnC = 0x9E

@@ -103,3 +103,12 @@
 "HID 监听启动失败" = "Failed to start HID monitoring";
 "显存占用" = "VRAM";
 "占用率" = "Usage";
+"Fn 快捷键" = "Fn Key Shortcuts";
+"快捷指令" = "Shortcut";
+"正在运行" = "Running";
+"运行完成" = "Completed";
+"运行失败" = "Run Failed";
+"不绑定" = "None";
+"没有快捷指令" = "No Shortcuts";
+"无法读取快捷指令" = "Unable to Load Shortcuts";
+"暂未绑定快捷指令" = "No Shortcut Assigned";

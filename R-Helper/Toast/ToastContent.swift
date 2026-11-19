@@ -35,11 +35,8 @@ struct ToastContent {
         case .superLock: self.init(title: "Command 锁定", detail: state, symbol: enabled ? "lock.fill" : "lock.open.fill")
         case .camera: self.init(title: "摄像头", detail: "快捷键", symbol: "camera.fill")
         case .previousAuraEffect: self.init(title: "Aura 灯效", detail: "上一灯效", symbol: "sparkles")
-        case .fnF4: self.init(title: "Fn + F4", detail: "可配置快捷键", symbol: "sparkles")
         case .keyboardLight: self.init(title: "键盘灯", detail: state, symbol: "keyboard")
-        case .fnV: self.init(title: "Fn + V", detail: "可配置快捷键", symbol: "keyboard")
-        case .fnC: self.init(title: "Fn + C", detail: "可配置快捷键", symbol: "keyboard")
-        case .performanceMode, .menu: return nil
+        case .performanceMode, .menu, .fnF4, .f14, .fnV, .fnC: return nil
         }
     }
 }

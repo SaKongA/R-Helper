@@ -1,5 +1,6 @@
 import CoreFoundation
 import CoreGraphics
+import AppKit
 import Combine
 import Foundation
 import IOKit.hid
@@ -13,6 +14,8 @@ final class HotkeyMonitor: ObservableObject {
         openErrorStatus.map { String(format: L10n.text("HID 监听启动失败：0x%08X"), UInt32(bitPattern: $0)) }
     }
     private var manager: IOHIDManager?
+    private var globalKeyMonitor: Any?
+    private var localKeyMonitor: Any?
     private var previewToggleStates: [Hotkey: Bool] = [:]
 
     func start(requestPermission: Bool = false) {
@@ -53,6 +56,7 @@ final class HotkeyMonitor: ObservableObject {
             Task { @MainActor in
                 let monitor = HotkeyMonitor.shared
                 let hotkey = event.key
+                if monitor.handleShortcutKey(hotkey) { return }
                 if hotkey == .fnLock || hotkey == .touchpad || hotkey == .keyboardLightUp || hotkey == .keyboardLightDown || hotkey == .performanceMode || hotkey == .brightnessUp || hotkey == .brightnessDown || hotkey == .menu {
                     HotkeyActionController.shared.handle(hotkey)
                     return
@@ -73,14 +77,35 @@ final class HotkeyMonitor: ObservableObject {
         }
         openErrorStatus = nil
         self.manager = manager
+        globalKeyMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
+            guard event.keyCode == 107, !event.isARepeat else { return }
+            Task { @MainActor in _ = HotkeyMonitor.shared.handleShortcutKey(.f14) }
+        }
+        localKeyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            if event.keyCode == 107, !event.isARepeat {
+                Task { @MainActor in _ = HotkeyMonitor.shared.handleShortcutKey(.f14) }
+            }
+            return event
+        }
     }
 
     func stop() {
         DisplayBrightnessHotkey.shared.stopRepeat()
+        if let globalKeyMonitor { NSEvent.removeMonitor(globalKeyMonitor); self.globalKeyMonitor = nil }
+        if let localKeyMonitor { NSEvent.removeMonitor(localKeyMonitor); self.localKeyMonitor = nil }
         guard let manager else { return }
         IOHIDManagerUnscheduleFromRunLoop(manager, CFRunLoopGetMain(), CFRunLoopMode.defaultMode.rawValue)
         IOHIDManagerClose(manager, IOOptionBits(kIOHIDOptionsTypeNone))
         self.manager = nil
+    }
+
+    private func handleShortcutKey(_ key: Hotkey) -> Bool {
+        guard ShortcutBindings.keys.contains(where: { $0.0 == key }) else { return false }
+        if ShortcutBindings.shared.runIfBound(key) { return true }
+        if UserDefaults.standard.bool(forKey: "fnNotificationEnabled") {
+            ToastController.shared.show(ToastContent(title: "快捷指令", detail: "暂未绑定快捷指令", symbol: "sparkles"))
+        }
+        return true
     }
 
 }

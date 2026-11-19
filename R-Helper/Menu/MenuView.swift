@@ -75,6 +75,8 @@ struct MenuView: View {
                 }
             }
 
+            FnShortcutMenuRow()
+
             LanguageMenuRow()
 
             if hotkeyMonitor.needsInputMonitoring {
