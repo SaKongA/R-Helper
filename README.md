@@ -1,27 +1,29 @@
 # R-Helper
 
-R-Helper 是华硕笔记本黑苹果的 macOS 菜单栏工具，提供性能模式切换、Fn 快捷键提示和硬件状态监控。
+English | [简体中文](README_zh-CN.md)
 
-## 功能
+R-Helper is a macOS menu bar app for ASUS Hackintosh laptops. It provides performance mode controls, Fn key feedback, and hardware monitoring.
 
-- 切换静音、平衡和性能模式
-- 显示 CPU、GPU、风扇和电池的可用数据
-- 响应支持的 Fn 快捷键，显示操作提示
-- 支持登录时启动和中英文界面
+## Features
 
-硬件功能和可读取的数据取决于机型、固件及已安装的驱动。
+- Switch between Silent, Balanced, and Performance modes.
+- Display available CPU, GPU, VRAM, fan, and battery readings.
+- Show feedback for supported Fn keys and bind them to existing Shortcuts.
+- Launch at login and use the app in English or Simplified Chinese.
 
-## 前置依赖
+Available hardware features and readings depend on the model, firmware, and installed drivers.
 
-- **AsusACPIService.kext**：提供华硕 ACPI 控制、风扇及电池等数据。需要安装并加载本项目配套的驱动，并确保设备的 ACPI 配置可供驱动识别。
-- **AMDRyzenCPUPowerManagement.kext**：可选，用于读取受支持的 AMD Ryzen CPU 频率、温度、功耗和详细信息。
-- **VoodooI2C 及其触控板驱动**：可选，使用兼容的 VoodooI2C 触控板服务时，支持读取和切换触控板状态。
+## Requirements
 
-未安装可选驱动时，对应功能或数据可能不可用。当前项目的最低系统版本为 macOS 26.5。
+- **[AsusACPIService.kext](https://github.com/SaKongA/AsusACPIService)**: Provides ASUS ACPI controls and readings such as fan and battery data. Install and load the driver for this project, and ensure the device's ACPI configuration can be recognized by the driver.
+- **[AMDRyzenCPUPowerManagement.kext](https://github.com/trulyspinach/SMCAMDProcessor)** (optional): Provides frequency, temperature, power, and detailed information for supported AMD Ryzen CPUs.
+- **[VoodooI2C](https://github.com/VoodooI2C/VoodooI2C) and its trackpad driver** (optional): Enable reading and toggling the trackpad state when using a compatible VoodooI2C trackpad service.
 
-## 构建
+Features or readings that depend on optional drivers may be unavailable when those drivers are not installed. The current minimum supported version is macOS 26.5.
 
-App 构建时需要引用驱动仓库中的协议头文件。请将两个仓库放在同一个父目录下：
+## Build
+
+The app requires protocol headers from the driver repository. Place the two repositories in the same parent directory:
 
 ```text
 R-Helper/
@@ -29,14 +31,18 @@ R-Helper/
 └── AsusACPIService/
 ```
 
-使用 Xcode 打开 `R-Helper/R-Helper.xcodeproj`，选择 My Mac 后构建或归档。
+Open `R-Helper/R-Helper.xcodeproj` in Xcode, select My Mac, and build or archive the app.
 
-## 截图
+## Screenshots
 
-![菜单面板](Pictures/1.png)
+![Menu panel](Pictures/1.png)
 
-![界面截图 2](Pictures/2.png)
+![CPU details](Pictures/2.png)
 
-![界面截图 3](Pictures/3.png)
+![Fn key shortcuts](Pictures/3.png)
 
-![界面截图 4](Pictures/4.png)
+![Trackpad feedback](Pictures/4.png)
+
+![Performance mode feedback](Pictures/5.png)
+
+![Display brightness feedback](Pictures/6.png)
