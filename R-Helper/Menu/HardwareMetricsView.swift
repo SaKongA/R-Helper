@@ -25,7 +25,7 @@ struct HardwareMetricsView: View {
                 }
                 VStack(alignment: .leading, spacing: 8) {
                     metrics(title: monitoring.sample?.gpuModel ?? "GPU", values: gpuValues)
-                    HStack(alignment: .top, spacing: 12) {
+                    HStack(alignment: .top, spacing: 8) {
                         if let used = monitoring.sample?.gpuStatistics?.videoMemoryUsedBytes {
                             let total = monitoring.sample?.gpuStatistics?.videoMemoryTotalBytes
                             let progress = total.flatMap { $0 > 0 && used <= $0 ? Double(used) / Double($0) : nil }
