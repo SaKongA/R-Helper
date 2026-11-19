@@ -1,9 +1,9 @@
 import Foundation
 
 nonisolated final class KeyboardController {
-    private let kernel: KernelController
+    private let kernel: AsusACPIController
 
-    init(client: AsusACPIClient) { kernel = KernelController(client: client) }
+    init(client: AsusACPIClient) { kernel = AsusACPIController(client: client) }
 
     // 切换 Fn 锁并读取实际状态
     func toggleFnLock() throws -> Bool {

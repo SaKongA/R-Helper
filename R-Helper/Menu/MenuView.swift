@@ -2,7 +2,7 @@ import SwiftUI
 import ServiceManagement
 import AppKit
 
-struct ContentView: View {
+struct MenuView: View {
     @Environment(\.openWindow) private var openWindow
     @ObservedObject private var performanceState = PerformanceState.shared
     @ObservedObject private var monitoring = HardwareMonitoringState.shared

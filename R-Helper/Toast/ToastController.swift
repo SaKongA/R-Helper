@@ -1,9 +1,10 @@
 import AppKit
+import Combine
 import SwiftUI
 
 @MainActor
-final class ModeToastController {
-    static let shared = ModeToastController()
+final class ToastController {
+    static let shared = ToastController()
 
     private var panel: NSPanel?
     private var dismissTask: Task<Void, Never>?
@@ -29,7 +30,7 @@ final class ModeToastController {
         let appearance = NSApplication.shared.effectiveAppearance
         let isDark = appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
         let animationState = ToastAnimationState()
-        let contentView = NSHostingView(rootView: AnimatedModeToastView(content: content, isDark: isDark, animationState: animationState))
+        let contentView = NSHostingView(rootView: AnimatedToastView(content: content, isDark: isDark, animationState: animationState))
         let size = contentView.fittingSize
         let target = NSRect(
             x: screen.visibleFrame.midX - size.width / 2,
@@ -75,4 +76,9 @@ final class ModeToastController {
             }
         }
     }
+}
+
+@MainActor
+final class ToastAnimationState: ObservableObject {
+    @Published var isVisible = false
 }

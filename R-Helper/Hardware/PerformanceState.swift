@@ -51,11 +51,11 @@ final class PerformanceState: ObservableObject {
                 case .success:
                     UserDefaults.standard.set(selected.rawValue, forKey: self.savedModeKey)
                     withAnimation(.easeInOut(duration: 0.18)) { self.mode = selected }
-                    if showToast { ModeToastController.shared.show(selected) }
+                    if showToast { ToastController.shared.show(selected) }
                 case .failure(let error):
                     AppLogger.error("性能模式操作失败：\(error.localizedDescription)")
                     let detail = (error as? AsusACPIClientError) == .timeout ? "驱动未响应" : "操作失败"
-                    if showToast { ModeToastController.shared.show(ToastContent(title: "性能模式", detail: detail, symbol: "exclamationmark.circle")) }
+                    if showToast { ToastController.shared.show(ToastContent(title: "性能模式", detail: detail, symbol: "exclamationmark.circle")) }
                 }
             }
         }

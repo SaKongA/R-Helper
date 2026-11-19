@@ -7,9 +7,9 @@ nonisolated enum TouchpadControllerError: LocalizedError {
 }
 
 nonisolated final class TouchpadController {
-    private let kernel: KernelController
+    private let kernel: AsusACPIController
 
-    init(client: AsusACPIClient) { kernel = KernelController(client: client) }
+    init(client: AsusACPIClient) { kernel = AsusACPIController(client: client) }
 
     // 读取触控板状态
     func readEnabled() throws -> Bool {

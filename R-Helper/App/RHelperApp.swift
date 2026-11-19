@@ -9,7 +9,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         UserDefaults.standard.register(defaults: ["fnNotificationEnabled": true])
         hotkeyMonitor.start(requestPermission: true)
         HardwareMonitoringState.shared.start()
-        KernelController.readStartupInformation { mode in
+        AsusACPIController.readStartupInformation { mode in
             Task { @MainActor in PerformanceState.shared.initialize(hardwareMode: mode) }
         }
     }
@@ -28,7 +28,7 @@ struct RHelperApp: App {
 
     var body: some Scene {
         MenuBarExtra("R-Helper", image: "MenuBarIcon") {
-            ContentView()
+            MenuView()
                 .introspectMenuBarExtraWindow { window in
                     window.animationBehavior = .utilityWindow
                 }

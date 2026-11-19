@@ -42,7 +42,7 @@ final class HotkeyMonitor: ObservableObject {
             AppLogger.info(String(format: "HID report=0x%X page=0x%X usage=0x%X value=%ld", reportID, page, usage, pressed))
             if page == 0xFF31, (usage == Hotkey.brightnessUp.rawValue || usage == Hotkey.brightnessDown.rawValue), (pressed == 0 || pressed == 1) {
                 Task { @MainActor in
-                    HotkeyActionController.shared.handleDisplayBrightnessKey(up: usage == Hotkey.brightnessUp.rawValue, pressed: pressed == 1)
+                    DisplayBrightnessHotkey.shared.handleKey(up: usage == Hotkey.brightnessUp.rawValue, pressed: pressed == 1)
                 }
                 return
             }
@@ -57,7 +57,7 @@ final class HotkeyMonitor: ObservableObject {
                 let enabled = event.enabled ?? (hotkey.isToggle ? !(monitor.previewToggleStates[hotkey] ?? false) : false)
                 if hotkey.isToggle { monitor.previewToggleStates[hotkey] = enabled }
                 guard UserDefaults.standard.bool(forKey: "fnNotificationEnabled") else { return }
-                ModeToastController.shared.show(hotkey: hotkey, enabled: enabled)
+                ToastController.shared.show(hotkey: hotkey, enabled: enabled)
             }
         }, nil)
         IOHIDManagerScheduleWithRunLoop(manager, CFRunLoopGetMain(), CFRunLoopMode.defaultMode.rawValue)
@@ -73,7 +73,7 @@ final class HotkeyMonitor: ObservableObject {
     }
 
     func stop() {
-        HotkeyActionController.shared.stopDisplayBrightnessRepeat()
+        DisplayBrightnessHotkey.shared.stopRepeat()
         guard let manager else { return }
         IOHIDManagerUnscheduleFromRunLoop(manager, CFRunLoopGetMain(), CFRunLoopMode.defaultMode.rawValue)
         IOHIDManagerClose(manager, IOOptionBits(kIOHIDOptionsTypeNone))

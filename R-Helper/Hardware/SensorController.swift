@@ -81,7 +81,7 @@ nonisolated final class SensorController: @unchecked Sendable {
         let state: AsusACPIState
         do {
             try client.connect()
-            state = try KernelController(client: client).readState(logDetails: false)
+            state = try AsusACPIController(client: client).readState(logDetails: false)
             driver = .connected(state.version)
         } catch {
             client.disconnect()

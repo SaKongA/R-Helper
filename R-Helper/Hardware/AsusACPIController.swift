@@ -1,6 +1,6 @@
 import Foundation
 
-nonisolated final class KernelController {
+nonisolated final class AsusACPIController {
     private let client: AsusACPIClient
 
     init(client: AsusACPIClient) { self.client = client }
@@ -43,7 +43,7 @@ nonisolated final class KernelController {
             let client = AsusACPIClient()
             try client.connect()
             defer { client.disconnect() }
-            do { _ = try KernelController(client: client).readState() }
+            do { _ = try AsusACPIController(client: client).readState() }
             catch { AppLogger.error("读取扩展信息失败：\(error)") }
             do { return try PerformanceController(client: client).readMode() }
             catch let error as AsusACPIClientError where error.isUnsupported {
@@ -57,7 +57,7 @@ nonisolated final class KernelController {
                 AppLogger.error("读取驱动状态失败：\(error.localizedDescription)")
                 if (error as? AsusACPIClientError) == .timeout {
                     Task { @MainActor in
-                        ModeToastController.shared.show(ToastContent(title: "驱动", detail: "驱动未响应", symbol: "exclamationmark.circle"))
+                        ToastController.shared.show(ToastContent(title: "驱动", detail: "驱动未响应", symbol: "exclamationmark.circle"))
                     }
                 }
                 completion(nil)

@@ -1,6 +1,7 @@
+import AppKit
 import SwiftUI
 
-struct ModeToastView: View {
+struct ToastView: View {
     let content: ToastContent
     let isDark: Bool
 
@@ -51,5 +52,36 @@ struct ModeToastView: View {
             )
         }
         .padding(3)
+    }
+}
+
+struct AnimatedToastView: View {
+    let content: ToastContent
+    let isDark: Bool
+    @ObservedObject var animationState: ToastAnimationState
+
+    var body: some View {
+        ToastView(content: content, isDark: isDark)
+            .compositingGroup()
+            .offset(y: animationState.isVisible ? 0 : 8)
+            .opacity(animationState.isVisible ? 1 : 0)
+            .padding(.vertical, 8)
+    }
+}
+
+struct ToastBlurView: NSViewRepresentable {
+    let isDark: Bool
+
+    func makeNSView(context: Context) -> NSVisualEffectView {
+        let view = NSVisualEffectView()
+        view.material = .hudWindow
+        view.blendingMode = .behindWindow
+        view.state = .active
+        view.appearance = NSAppearance(named: isDark ? .darkAqua : .aqua)
+        return view
+    }
+
+    func updateNSView(_ view: NSVisualEffectView, context: Context) {
+        view.appearance = NSAppearance(named: isDark ? .darkAqua : .aqua)
     }
 }
