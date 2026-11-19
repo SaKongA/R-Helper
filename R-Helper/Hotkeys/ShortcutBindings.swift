@@ -51,7 +51,7 @@ final class ShortcutBindings: NSObject {
     private let storageKey = "fnShortcutBindings"
     private let namesKey = "fnShortcutNames"
 
-    static let keys: [(Hotkey, String)] = [(.fnF4, "Fn + F4"), (.f14, "F14"), (.fnC, "Fn + C"), (.fnV, "Fn + V")]
+    static let keys: [(Hotkey, String)] = [(.fnF4, "Fn + F4"), (.fnF11, "Fn + F11"), (.fnF12, "Fn + F12"), (.fnC, "Fn + C"), (.fnV, "Fn + V")]
 
     func identifier(for key: Hotkey) -> String? {
         (UserDefaults.standard.dictionary(forKey: storageKey) as? [String: String])?[String(key.rawValue)]

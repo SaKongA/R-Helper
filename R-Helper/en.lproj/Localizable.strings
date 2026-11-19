@@ -76,7 +76,6 @@
 "调暗" = "Decrease";
 "声音" = "Sound";
 "触控板" = "Trackpad";
-"睡眠" = "Sleep";
 "飞行模式" = "Airplane Mode";
 "Fn 锁" = "Fn Lock";
 "Command 锁定" = "Command Lock";
@@ -103,6 +102,7 @@
 "HID 监听启动失败" = "Failed to start HID monitoring";
 "显存占用" = "VRAM";
 "占用率" = "Usage";
+"不可用" = "Unavailable";
 "Fn 快捷键" = "Fn Key Shortcuts";
 "快捷指令" = "Shortcut";
 "正在运行" = "Running";

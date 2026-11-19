@@ -13,9 +13,7 @@ struct HardwareMetricsView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     metrics(title: monitoring.sample?.cpuInfo.model ?? "CPU", values: cpuValues)
                     cpuDetailsRow
-                    if let usage = monitoring.sample?.cpuUsagePercent {
-                        usageBar(usage)
-                    }
+                    usageBar(monitoring.sample?.cpuUsagePercent)
                 }
             }
             if !gpuValues.isEmpty || monitoring.sample?.gpuStatistics?.usagePercent != nil || monitoring.sample?.gpuStatistics?.videoMemoryUsedBytes != nil {
@@ -209,17 +207,19 @@ struct HardwareMetricsView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private func usageBar(_ usage: Double) -> some View {
+    private func usageBar(_ usage: Double?) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(L10n.text("占用率"))
                 Spacer()
-                Text(String(format: "%.0f%%", usage))
+                Text(usage.map { String(format: "%.0f%%", $0) } ?? "--")
                     .foregroundStyle(.secondary)
             }
-            ProgressView(value: usage, total: 100)
+            ProgressView(value: usage ?? 0, total: 100)
                 .progressViewStyle(.linear)
                 .accessibilityLabel(L10n.text("占用率"))
+                .accessibilityValue(usage.map { String(format: "%.0f%%", $0) } ?? L10n.text("不可用"))
+                .disabled(usage == nil)
         }
     }
 
