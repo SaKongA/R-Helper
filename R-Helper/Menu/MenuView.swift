@@ -31,7 +31,7 @@ struct MenuView: View {
                 .buttonStyle(.plain)
                 .help(kextTitle)
                 .accessibilityLabel(kextTitle)
-                Link(destination: URL(string: "https://github.com")!) {
+                Link(destination: URL(string: "https://github.com/SaKongA/R-Helper")!) {
                     Image("GitHub")
                         .renderingMode(.template)
                         .resizable()
