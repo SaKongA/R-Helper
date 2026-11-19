@@ -31,7 +31,7 @@ nonisolated struct HardwareSensorSample: Sendable {
 
 nonisolated enum KextConnectionStatus: Sendable {
     case connected(UInt32)
-    case disconnected(String)
+    case disconnected(any Error)
 }
 
 nonisolated final class SensorController: @unchecked Sendable {
@@ -85,7 +85,7 @@ nonisolated final class SensorController: @unchecked Sendable {
             driver = .connected(state.version)
         } catch {
             client.disconnect()
-            return HardwareSensorSample(driver: .disconnected(error.localizedDescription), cpu: cpu, cpuInfo: cpuInfo, gpuModel: gpu?.model, gpuStatistics: gpuStatistics, fans: nil, gpuTemperature: nil, batteryDischarge: nil)
+            return HardwareSensorSample(driver: .disconnected(error), cpu: cpu, cpuInfo: cpuInfo, gpuModel: gpu?.model, gpuStatistics: gpuStatistics, fans: nil, gpuTemperature: nil, batteryDischarge: nil)
         }
         let cpuFan = state.validFields & UInt32(AsusACPIValidCPUFan) != 0 ? state.cpuFanRPM : nil
         let gpuFan = state.validFields & UInt32(AsusACPIValidGPUFan) != 0 ? state.gpuFanRPM : nil

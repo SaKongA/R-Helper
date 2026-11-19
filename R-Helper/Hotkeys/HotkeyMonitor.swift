@@ -8,7 +8,10 @@ import IOKit.hid
 final class HotkeyMonitor: ObservableObject {
     static let shared = HotkeyMonitor()
     @Published private(set) var needsInputMonitoring = false
-    @Published private(set) var openError: String?
+    @Published private(set) var openErrorStatus: kern_return_t?
+    var openError: String? {
+        openErrorStatus.map { String(format: L10n.text("HID 监听启动失败：0x%08X"), UInt32(bitPattern: $0)) }
+    }
     private var manager: IOHIDManager?
     private var previewToggleStates: [Hotkey: Bool] = [:]
 
@@ -64,11 +67,11 @@ final class HotkeyMonitor: ObservableObject {
         let status = IOHIDManagerOpen(manager, IOOptionBits(kIOHIDOptionsTypeNone))
         guard status == kIOReturnSuccess else {
             IOHIDManagerUnscheduleFromRunLoop(manager, CFRunLoopGetMain(), CFRunLoopMode.defaultMode.rawValue)
-            openError = String(format: L10n.text("HID 监听启动失败：0x%08X"), UInt32(bitPattern: status))
+            openErrorStatus = status
             AppLogger.error(openError ?? L10n.text("HID 监听启动失败"))
             return
         }
-        openError = nil
+        openErrorStatus = nil
         self.manager = manager
     }
 

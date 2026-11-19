@@ -2,6 +2,7 @@ import AppKit
 import SwiftUI
 
 struct ToastView: View {
+    @AppStorage("appLanguage") private var language = "system"
     let content: ToastContent
     let isDark: Bool
 
@@ -30,6 +31,7 @@ struct ToastView: View {
                     .fixedSize()
             }
         }
+        .id(language)
         .padding(.horizontal, 20)
         .frame(height: 58)
         .background {

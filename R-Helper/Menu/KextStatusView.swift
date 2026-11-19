@@ -18,7 +18,7 @@ struct KextStatusView: View {
     private var details: String {
         switch monitoring.driverStatus {
         case .connected(let version): "AsusACPIService · \(L10n.pair("协议版本", "\(version)"))"
-        case .disconnected(let error): error
+        case .disconnected(let error): error.localizedDescription
         case nil: L10n.text("正在读取驱动状态")
         }
     }
@@ -67,6 +67,8 @@ struct KextStatusView: View {
                     .keyboardShortcut(.defaultAction)
             }
         }
+        .id(language)
+        .background(WindowTitle(title: L10n.text("Kext 状态")))
         .padding(28)
         .frame(width: 360)
         .onAppear {
@@ -75,6 +77,20 @@ struct KextStatusView: View {
         }
         .onDisappear {
             NSApplication.shared.setActivationPolicy(.accessory)
+        }
+    }
+}
+
+private struct WindowTitle: NSViewRepresentable {
+    let title: String
+
+    func makeNSView(context: Context) -> NSView {
+        NSView()
+    }
+
+    func updateNSView(_ view: NSView, context: Context) {
+        DispatchQueue.main.async { [weak view] in
+            view?.window?.title = title
         }
     }
 }
