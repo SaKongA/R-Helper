@@ -36,8 +36,10 @@ final class HotkeyMonitor: ObservableObject {
             let element = IOHIDValueGetElement(value)
             let page = IOHIDElementGetUsagePage(element)
             let usage = IOHIDElementGetUsage(element)
+            let reportID = IOHIDElementGetReportID(element)
             let pressed = IOHIDValueGetIntegerValue(value)
-            AppLogger.info(String(format: "HID page=0x%X usage=0x%X value=%ld", page, usage, pressed))
+            guard page != 0xFF31 || reportID == 0x5A else { return }
+            AppLogger.info(String(format: "HID report=0x%X page=0x%X usage=0x%X value=%ld", reportID, page, usage, pressed))
             if page == 0xFF31, (usage == Hotkey.brightnessUp.rawValue || usage == Hotkey.brightnessDown.rawValue), (pressed == 0 || pressed == 1) {
                 Task { @MainActor in
                     HotkeyActionController.shared.handleDisplayBrightnessKey(up: usage == Hotkey.brightnessUp.rawValue, pressed: pressed == 1)
